@@ -1,5 +1,5 @@
-import {constructedDiagramHtml,bindConstructedDiagram,diagramIcon} from './diagram-builder.js?v=20261115-classroom-v9';
-import {checkMultiplicationDrawing,editMultiplicationDrawing,checkMultiplicationDiagram,finishMultiplication,multiplicationUnits} from './multiplication.js?v=20261115-classroom-v9';
+import {constructedDiagramHtml,bindConstructedDiagram,diagramIcon} from './diagram-builder.js?v=20261115-classroom-v10';
+import {checkMultiplicationDrawing,editMultiplicationDrawing,checkMultiplicationDiagram,finishMultiplication,multiplicationUnits} from './multiplication.js?v=20261115-classroom-v10';
 const colours=['#df3938','#9acd50','#d476ae','#f8db38','#287948','#2379bf'];
 const rodColours=['#fffdf3','#df3938','#9acd50','#d476ae','#f8db38','#287948','#222','#8e5839','#2379bf','#ef8b2c'];
 const escape=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
