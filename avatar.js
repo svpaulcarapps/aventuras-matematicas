@@ -1,6 +1,6 @@
-import {costumeById} from './costumes.js?v=20261115-classroom-v8';
-import {spriteFrames} from './professional-sprites.js?v=20261115-classroom-v8';
-import {validEquipment} from './rewards.js?v=20261115-classroom-v8';
+import {costumeById} from './costumes.js?v=20261115-classroom-v9';
+import {spriteFrames} from './professional-sprites.js?v=20261115-classroom-v9';
+import {validEquipment} from './rewards.js?v=20261115-classroom-v9';
 export const SKINS=['#f8d5ae','#eeb789','#d89765','#ba7952','#8c513a','#60382d'];
 export const HAIRS=['#342c32','#684331','#a75d2e','#eac35b','#b72f4f','#4165a0','#eeedf5','#293c6b'];
 export const OUTFITS=['#c43b43','#2a74a4','#278066','#8c4aa1','#db8e2e','#de658e','#303e68','#edf1e8'];

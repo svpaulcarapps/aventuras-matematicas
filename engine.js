@@ -1,6 +1,6 @@
-import {wordProblem} from './word-problems.js?v=20261115-classroom-v8';
-export {validateMultiplication} from './multiplication.js?v=20261115-classroom-v8';
-import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261115-classroom-v8';
+import {wordProblem} from './word-problems.js?v=20261115-classroom-v9';
+export {validateMultiplication} from './multiplication.js?v=20261115-classroom-v9';
+import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261115-classroom-v9';
 export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación'};
 export const sum=ns=>ns.reduce((a,b)=>a+b,0);
 export const isAddition=mode=>['add','dresses','sacks','sackhunt'].includes(mode);
