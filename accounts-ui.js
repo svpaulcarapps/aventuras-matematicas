@@ -1,6 +1,6 @@
-import {COSTUMES} from './costumes.js?v=20261115-classroom-v7';
-import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261115-classroom-v7';
-import {avatarSvg,DEFAULT_AVATAR} from './avatar.js?v=20261115-classroom-v7';
+import {COSTUMES} from './costumes.js?v=20261115-classroom-v8';
+import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261115-classroom-v8';
+import {avatarSvg,DEFAULT_AVATAR} from './avatar.js?v=20261115-classroom-v8';
 const $=s=>document.querySelector(s),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const rooms=(selected='3A')=>['1','2','3','4','5','6'].flatMap(g=>['A','B','C','D'].map(c=>g+c)).map(r=>`<option value="${r}" ${r===selected?'selected':''}>${r[0]}º${r[1]}</option>`).join('');
 let account=null,adminKey='',hooks;

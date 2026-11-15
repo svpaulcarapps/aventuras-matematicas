@@ -1,14 +1,14 @@
-import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261115-classroom-v7';
-import {wordProblem,problemMethods,checkWordDiagram,wordDiagramHtml} from './word-problems.js?v=20261115-classroom-v7';
-import {setupAccounts} from './accounts-ui.js?v=20261115-classroom-v7';
-import {avatarSvg} from './avatar.js?v=20261115-classroom-v7';
-import {installPixelIcons} from './pixel-icons.js?v=20261115-classroom-v7';
-import {createMultiplication,MULTIPLICATION_LEVELS} from './multiplication.js?v=20261115-classroom-v7';
-import {multiplicationHtml,bindMultiplication} from './multiplication-ui.js?v=20261115-classroom-v7';
-import {setupRods} from './rods.js?v=20261115-classroom-v7';
-import {sound,setupSound} from './sounds.js?v=20261115-classroom-v7';
-import {extraHtml,bindExtra} from './extra-routes.js?v=20261115-classroom-v7';
-import {LABELS,DIFFICULTIES,isAddition,createDresses,dressComplete,createSacks,createSackHunt,alignTree,finishTree,OperationHistory,nextOperation,createTree,activeNodes,splitNode,mergeNodes,removeNodes,circleNode,treeComplete,createClimb,setClimbStart,addJump,crossClimbStart,branchClimb,finishClimb,sum} from './engine.js?v=20261115-classroom-v7';
+import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261115-classroom-v8';
+import {wordProblem,problemMethods,checkWordDiagram,wordDiagramHtml} from './word-problems.js?v=20261115-classroom-v8';
+import {setupAccounts} from './accounts-ui.js?v=20261115-classroom-v8';
+import {avatarSvg} from './avatar.js?v=20261115-classroom-v8';
+import {installPixelIcons} from './pixel-icons.js?v=20261115-classroom-v8';
+import {createMultiplication,MULTIPLICATION_LEVELS} from './multiplication.js?v=20261115-classroom-v8';
+import {multiplicationHtml,bindMultiplication} from './multiplication-ui.js?v=20261115-classroom-v8';
+import {setupRods} from './rods.js?v=20261115-classroom-v8';
+import {sound,setupSound} from './sounds.js?v=20261115-classroom-v8';
+import {extraHtml,bindExtra} from './extra-routes.js?v=20261115-classroom-v8';
+import {LABELS,DIFFICULTIES,isAddition,createDresses,dressComplete,createSacks,createSackHunt,alignTree,finishTree,OperationHistory,nextOperation,createTree,activeNodes,splitNode,mergeNodes,removeNodes,circleNode,treeComplete,createClimb,setClimbStart,addJump,crossClimbStart,branchClimb,finishClimb,sum} from './engine.js?v=20261115-classroom-v8';
 const $=s=>document.querySelector(s),app=$('#app'),dialog=$('#editor');
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let history,solved=0,storageWarning=false;try{history=new OperationHistory(JSON.parse(localStorage.getItem('oaoa-operations-v1')||'{}'));solved=Number(localStorage.getItem('oaoa-solved')||0)}catch{history=new OperationHistory();storageWarning=true}
