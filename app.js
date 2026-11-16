@@ -1,6 +1,6 @@
 import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261115-classroom-v10';
 import {wordProblem,problemMethods,checkWordDiagram,wordDiagramHtml} from './word-problems.js?v=20261115-classroom-v10';
-import {setupAccounts} from './accounts-ui.js?v=20261115-classroom-v10';
+import {setupAccounts} from './accounts-ui.js?v=20261116-accounts-v11';
 import {avatarSvg} from './avatar.js?v=20261115-classroom-v10';
 import {installPixelIcons} from './pixel-icons.js?v=20261115-classroom-v10';
 import {createMultiplication,MULTIPLICATION_LEVELS} from './multiplication.js?v=20261115-classroom-v10';
