@@ -1,4 +1,4 @@
-import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261119-sumas3-v1';
+import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261119-todo-v2';
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 const colors=['#d04b36','#2678ab','#4e8d52','#914ba5'];
@@ -29,7 +29,7 @@ export function openGeoboard({host,course=1,level=1,player,api,home,onPoints,fre
   $('#geo-close').disabled=closed||points.length<(!free&&task.kind==='path'?2:3)||solved||saving||starting;
   $('#geo-undo').disabled=(!points.length&&!bands.length)||solved||saving||starting;
   $('#geo-clear').disabled=(!points.length&&!bands.length)||solved||saving||starting;
-  const check=$('#geo-check');if(check)check.disabled=!closed||!run||solved||saving||starting;
+  const check=$('#geo-check');if(check)check.disabled=(!closed&&points.length<2)||!run||solved||saving||starting;
   if(free&&closed){const metrics=polygon(points,task.size);$('#geo-metrics').innerHTML=`<span>${metrics.sides} lados</span><span>Área: ${number(metrics.area)} u²</span><span>Perímetro: ${number(metrics.perimeter)} u</span>`}else $('#geo-metrics').innerHTML='';
  };
  const message=text=>{const box=$('#geo-message');if(box)box.textContent=text;};
@@ -46,7 +46,7 @@ export function openGeoboard({host,course=1,level=1,player,api,home,onPoints,fre
   $('#geo-undo').onclick=()=>{if(closed)closed=false;else if(points.length)points.pop();else if(bands.length){points=bands.pop();closed=true}message('');board()};
   $('#geo-clear').onclick=()=>{points=[];closed=false;bands=[];message('');board()};
   if(free){$('#geo-add').onclick=()=>{if(!closed){message('Cierra primero la figura actual para añadir otra goma.');return}bands.push(points);points=[];closed=false;color=(color+1)%colors.length;board();message('Elige los clavos de la siguiente goma.')};$('#geo-color').onclick=()=>{color=(color+1)%colors.length;board()}}
-  else $('#geo-answer-form').onsubmit=async e=>{e.preventDefault();if(!closed||saving||solved)return;try{const answer=$('#geo-answer')?Number($('#geo-answer').value):null;checkGeoboard(task,points,answer);pendingEvidence=geoboardEvidence(points,answer);await save()}catch(e){mistakes=Math.min(1000,mistakes+1);message(e.message)}};
+  else $('#geo-answer-form').onsubmit=async e=>{e.preventDefault();if(saving||solved)return;if(!closed){$('#geo-close')?.click();if(!closed)return}try{const answer=$('#geo-answer')?Number($('#geo-answer').value):null;checkGeoboard(task,points,answer);pendingEvidence=geoboardEvidence(points,answer);await save()}catch(e){mistakes=Math.min(1000,mistakes+1);message(e.message)}};
   board();if(!free)void beginChallenge();
  };
  async function save(){

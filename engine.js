@@ -1,7 +1,7 @@
-import {wordProblem} from './word-problems.js?v=20261119-sumas3-v1';
-export {validateMultiplication} from './multiplication.js?v=20261119-sumas3-v1';
-import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261119-sumas3-v1';
-export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano'};
+import {wordProblem} from './word-problems.js?v=20261119-todo-v2';
+export {validateMultiplication} from './multiplication.js?v=20261119-todo-v2';
+import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261119-todo-v2';
+export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano',tangram:'El tangram'};
 export const sum=ns=>ns.reduce((a,b)=>a+b,0);
 export const isAddition=mode=>['add','dresses','sacks','sackhunt'].includes(mode);
 // Tree and dress additions alternate between two and three addends; op.c only exists in the three-addend version.
