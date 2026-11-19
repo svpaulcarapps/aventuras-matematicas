@@ -1,7 +1,8 @@
-import {wordProblem} from './word-problems.js?v=20261119-todo-v3';
-export {validateMultiplication} from './multiplication.js?v=20261119-todo-v3';
-import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261119-todo-v3';
-export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano',tangram:'El tangram'};
+import {wordProblem} from './word-problems.js?v=20261119-mult-v1';
+export {validateMultiplication} from './multiplication.js?v=20261119-mult-v1';
+import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261119-mult-v1';
+import {PRODUCT_MODES,nextProduct,fitsProduct} from './products.js?v=20261119-mult-v1';
+export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano',tangram:'El tangram',shark:'Multiplicación del tiburón',italian:'Técnica italiana'};
 export const sum=ns=>ns.reduce((a,b)=>a+b,0);
 export const isAddition=mode=>['add','dresses','sacks','sackhunt'].includes(mode);
 // Tree and dress additions alternate between two and three addends; op.c only exists in the three-addend version.
@@ -19,12 +20,13 @@ export class OperationHistory{
  serialize(){const out={...this.saved};for(const [key,bits]of this.cache){let text='';for(let i=0;i<bits.length;i+=8192)text+=String.fromCharCode(...bits.subarray(i,i+8192));out[key]=btoa(text)}return out}
 }
 export const DIFFICULTIES=[{id:1,label:'Empiezo',digits:2},{id:2,label:'Avanzo',digits:2},{id:3,label:'Reto',digits:3},{id:4,label:'Experto',digits:3}];
-export function fitsDifficulty(mode,a,b,level){if(mode==='problems')return fitsDifficulty(wordProblem({a,b}).operation,a,b,level);if(mode==='multiply')return validMultiplicationSeed(a,b,level);if(!level)return true;if(isAddition(mode)){const units=a%10+b%10,tens=Math.floor(a/10)%10+Math.floor(b/10)%10+(units>=10?1:0);return level===1?units<10:level===2?units>=10:level===3?true:units>=10&&tens>=10}if(mode==='climb')return level===1?a-b<=20:level===2?a-b>20:level===3?true:a-b>=100;return level===1?a%10>=b%10:level===2?a%10<b%10:level===3?true:a%100<b%100&&a%10<b%10}
+export function fitsDifficulty(mode,a,b,level){if(PRODUCT_MODES.includes(mode))return fitsProduct(mode,a,b,level);if(mode==='problems')return fitsDifficulty(wordProblem({a,b}).operation,a,b,level);if(mode==='multiply')return validMultiplicationSeed(a,b,level);if(!level)return true;if(isAddition(mode)){const units=a%10+b%10,tens=Math.floor(a/10)%10+Math.floor(b/10)%10+(units>=10?1:0);return level===1?units<10:level===2?units>=10:level===3?true:units>=10&&tens>=10}if(mode==='climb')return level===1?a-b<=20:level===2?a-b>20:level===3?true:a-b>=100;return level===1?a%10>=b%10:level===2?a%10<b%10:level===3?true:a%100<b%100&&a%10<b%10}
 // Remember the 2/3 alternation across reloads; storage can be missing or blocked.
 const THREE_KEY='oaoa-three-addends-next';
 let threeAddendsNext=(()=>{try{return localStorage.getItem(THREE_KEY)==='1'}catch{return false}})();
 export function nextOperation(mode,digits,history,difficulty){
  if(mode==='multiply')return nextMultiplication(history,difficulty);
+ if(PRODUCT_MODES.includes(mode))return nextProduct(mode,difficulty);
  if(THREE_ADDEND_MODES.includes(mode)&&[2,3].includes(digits)){const three=threeAddendsNext;threeAddendsNext=!threeAddendsNext;try{localStorage.setItem(THREE_KEY,threeAddendsNext?'1':'0')}catch{}if(three)return nextThreeAddends(mode,digits,difficulty)}
  if(!Object.hasOwn(LABELS,mode)||![2,3].includes(digits))throw Error('Elige una ruta y un nivel.');
  const min=10**(digits-1),max=10**digits-1;
