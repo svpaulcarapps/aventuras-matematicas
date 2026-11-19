@@ -55,8 +55,8 @@ export function tangramChallenge(op){
  const tray=[];let tx=11.5,ty=.8,rowH=0;
  for(const type of types){const w=type==='L'?4:type==='P'?3:2,h=type==='L'?2:type==='S'?1:2;if(tx+w>19.5){tx=11.5;ty+=rowH+.6;rowH=0}tray.push({type,x:tx,y:ty,r:0,f:false});tx+=w+.6;rowH=Math.max(rowH,h)}
  const hint=types.map(t=>TANGRAM_CODES[t]).join(' + ');
- return {seed,level,name:figure.name,hint,solution,pieces:tray,lines:level<=3,width:20,height:11,
-  prompt:level<=2?`Coloca las ${types.length} piezas para formar: ${figure.name.toLowerCase()}.`:level===3?'Usa las siete piezas. Las líneas te ayudan a ver dónde va cada una.':'Usa las siete piezas. Esta vez solo ves la silueta: ¡piensa cómo encajarlas!',
+ return {seed,level,name:figure.name,hint,solution,pieces:tray,lines:level===1||level===3,width:20,height:11,
+  prompt:level===1?`Coloca las ${types.length} piezas para formar: ${figure.name.toLowerCase()}.`:level===2?`Modelo oculto: no se ven las piezas. Usa ${types.length} piezas para formar: ${figure.name.toLowerCase()}.`:level===3?'Usa las siete piezas. Las líneas te ayudan a ver dónde va cada una.':'Usa las siete piezas. Esta vez solo ves la silueta: ¡piensa cómo encajarlas!',
   source:'Tangram clásico de siete piezas · OAOA'};
 }
 // Compare the pieces with the silhouette by sampling a fine grid.
@@ -72,9 +72,9 @@ export function checkTangram(task,placed){
   if(inT){total++;if(n)covered++}else if(n)outside++;
   if(n>1)overlap++;
  }
- if(overlap>total*.02)throw Error('Hay piezas montadas unas sobre otras. En el tangram las piezas se tocan, pero no se pisan.');
- if(outside>total*.03)throw Error('Alguna pieza se sale de la silueta. Gírala o cámbiala de sitio.');
- if(covered<total*.97)throw Error('Todavía queda un hueco por cubrir. Mira qué pieza encaja en él.');
+ if(overlap>total*.06)throw Error('Hay piezas montadas unas sobre otras. En el tangram las piezas se tocan, pero no se pisan.');
+ if(outside>total*.07)throw Error('Alguna pieza se sale de la silueta. Gírala o cámbiala de sitio.');
+ if(covered<total*.92)throw Error('Todavía queda un hueco por cubrir. Mira qué pieza encaja en él.');
  return true;
 }
 export const tangramEvidence=pieces=>({type:'tangram',pieces:pieces.map(p=>({x:p.x,y:p.y,r:p.r,f:!!p.f}))});
