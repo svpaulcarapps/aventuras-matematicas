@@ -1,9 +1,13 @@
-import {wordProblem} from './word-problems.js?v=20261116-geoboard-v12';
-export {validateMultiplication} from './multiplication.js?v=20261116-geoboard-v12';
-import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261116-geoboard-v12';
+import {wordProblem} from './word-problems.js?v=20261119-sumas3-v1';
+export {validateMultiplication} from './multiplication.js?v=20261119-sumas3-v1';
+import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261119-sumas3-v1';
 export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano'};
 export const sum=ns=>ns.reduce((a,b)=>a+b,0);
 export const isAddition=mode=>['add','dresses','sacks','sackhunt'].includes(mode);
+// Tree and dress additions alternate between two and three addends; op.c only exists in the three-addend version.
+export const THREE_ADDEND_MODES=['add','dresses'];
+export const addends=op=>op.c==null?[op.a,op.b]:[op.a,op.b,op.c];
+export function fitsAddends(list,level){if(!level||level===3)return true;const units=sum(list.map(n=>n%10)),tens=sum(list.map(n=>Math.floor(n/10)%10))+Math.floor(units/10);return level===1?units<10:level===2?units>=10:units>=10&&tens>=10}
 const integer=n=>Number.isInteger(n)&&n>=0;
 const copy=v=>structuredClone(v);
 export class OperationHistory{
@@ -16,8 +20,12 @@ export class OperationHistory{
 }
 export const DIFFICULTIES=[{id:1,label:'Empiezo',digits:2},{id:2,label:'Avanzo',digits:2},{id:3,label:'Reto',digits:3},{id:4,label:'Experto',digits:3}];
 export function fitsDifficulty(mode,a,b,level){if(mode==='problems')return fitsDifficulty(wordProblem({a,b}).operation,a,b,level);if(mode==='multiply')return validMultiplicationSeed(a,b,level);if(!level)return true;if(isAddition(mode)){const units=a%10+b%10,tens=Math.floor(a/10)%10+Math.floor(b/10)%10+(units>=10?1:0);return level===1?units<10:level===2?units>=10:level===3?true:units>=10&&tens>=10}if(mode==='climb')return level===1?a-b<=20:level===2?a-b>20:level===3?true:a-b>=100;return level===1?a%10>=b%10:level===2?a%10<b%10:level===3?true:a%100<b%100&&a%10<b%10}
+// Remember the 2/3 alternation across reloads; storage can be missing or blocked.
+const THREE_KEY='oaoa-three-addends-next';
+let threeAddendsNext=(()=>{try{return localStorage.getItem(THREE_KEY)==='1'}catch{return false}})();
 export function nextOperation(mode,digits,history,difficulty){
  if(mode==='multiply')return nextMultiplication(history,difficulty);
+ if(THREE_ADDEND_MODES.includes(mode)&&[2,3].includes(digits)){const three=threeAddendsNext;threeAddendsNext=!threeAddendsNext;try{localStorage.setItem(THREE_KEY,threeAddendsNext?'1':'0')}catch{}if(three)return nextThreeAddends(mode,digits,difficulty)}
  if(!Object.hasOwn(LABELS,mode)||![2,3].includes(digits))throw Error('Elige una ruta y un nivel.');
  const min=10**(digits-1),max=10**digits-1;
  const use=(a,b)=>{if(isAddition(mode)&&a>b)[a,b]=[b,a];if(!isAddition(mode)&&a<b)[a,b]=[b,a];if(!isAddition(mode)&&a===b)return null;if(!fitsDifficulty(mode,a,b,difficulty))return null;if(history.has(mode,digits,a,b))return null;history.mark(mode,digits,a,b);return {mode,digits,a,b,level:difficulty}};
@@ -25,8 +33,9 @@ export function nextOperation(mode,digits,history,difficulty){
  for(let a=min;a<=max;a++)for(let b=min;b<=max;b++){const op=use(a,b);if(op)return op}
  throw Error('Has recorrido todas las operaciones de este nivel. Cambia de nivel para seguir sin repeticiones.');
 }
+export function nextThreeAddends(mode,digits,difficulty){const min=10**(digits-1),max=10**digits-1,pick=()=>min+Math.floor(Math.random()*(max-min+1));for(let i=0;i<2000;i++){const list=[pick(),pick(),pick()];if(fitsAddends(list,difficulty))return {mode,digits,a:list[0],b:list[1],c:list[2],level:difficulty}}throw Error('No he encontrado una suma de tres sumandos para este nivel.')}
 const node=(id,value,x,y,kind='part')=>({id,value,x,y,kind,active:true,removed:false});
-export function createTree(op){return {op,nodes:op.mode==='add'?[node(0,op.a,260,65,'root'),node(1,op.b,640,65,'root')]:[node(0,op.a,300,65,'root'),{...node(1,op.b,640,65,'operand'),active:false,fixed:true}],edges:[],serial:2,splits:0,removed:0,answer:null,actions:[],log:[]}}
+export function createTree(op){const list=addends(op);return {op,nodes:op.mode==='add'?list.map((v,i)=>node(i,v,list.length===3?[180,450,720][i]:[260,640][i],65,'root')):[node(0,op.a,300,65,'root'),{...node(1,op.b,640,65,'operand'),active:false,fixed:true}],edges:[],serial:op.mode==='add'?addends(op).length:2,splits:0,removed:0,answer:null,actions:[],log:[]}}
 export const activeNodes=s=>s.nodes.filter(n=>n.active);
 function getNodes(s,ids){const ns=ids.map(id=>s.nodes.find(n=>n.id===id&&n.active));if(!ids.length||new Set(ids).size!==ids.length||ns.some(n=>!n))throw Error('Selecciona los números activos con los que quieres trabajar.');return ns}
 function place(s,x,y){return {x:Math.max(55,Math.min(845,x)),y}}
@@ -63,7 +72,7 @@ export function splitNode(state,id,values){const s=copy(state),[parent]=getNodes
 export function mergeNodes(state,ids,answer){const s=copy(state),ns=getNodes(s,ids);if(ns.length<2)throw Error('Selecciona al menos dos números para reunirlos.');if(!s.splits)throw Error('Abre alguna rama antes de reunir: queremos ver tu estrategia.');const expected=sum(ns.map(n=>n.value));if(!integer(answer)||answer!==expected)throw Error(`Revisa la suma de ${ns.map(n=>n.value).join(' + ')}. Las cantidades deben conservarse.`);const pos=place(s,sum(ns.map(n=>n.x))/ns.length,Math.max(...ns.map(n=>n.y))+120),n=node(s.serial++,answer,pos.x,pos.y,'group');for(const p of ns){p.active=false;s.edges.push([p.id,n.id])}s.nodes.push(n);s.log.push(`${ns.map(n=>n.value).join(' + ')} = ${answer}`);s.actions.push({type:'merge',ids,answer});return alignTree(s)}
 export function circleNode(state,id){const s=copy(state),[n]=getNodes(s,[id]);n.circled=!n.circled;s.actions.push({type:'circle',id});return s}
 export function removeNodes(state,ids){const s=copy(state);if(s.op.mode!=='subtract')throw Error('Solo tachamos cantidades en la resta.');const ns=getNodes(s,ids),total=sum(ns.map(n=>n.value)),remaining=s.op.b-s.removed;if(!remaining)throw Error('Ya has tachado todo el sustraendo. Reúne lo que queda.');if(total<=0)throw Error('Selecciona una cantidad mayor que cero.');if(total>remaining)throw Error(`Solo quedan ${remaining} por tachar. Has seleccionado ${total}; puedes descomponer esas ramas en partes más pequeñas.`);for(const n of ns){n.active=false;n.removed=true}s.removed+=total;s.log.push(`Tacho ${ns.map(n=>n.value).join(' + ')}: ${s.removed} de ${s.op.b} quitados`);s.actions.push({type:'remove',ids});return s}
-export function treeComplete(s){const ns=activeNodes(s);return s.splits>0&&ns.length===1&&ns[0].value===(isAddition(s.op.mode)?s.op.a+s.op.b:s.op.a-s.op.b)&&(isAddition(s.op.mode)||(s.removed===s.op.b&&s.answer===s.op.a-s.op.b))}
+export function treeComplete(s){const ns=activeNodes(s);return s.splits>0&&ns.length===1&&ns[0].value===(isAddition(s.op.mode)?sum(addends(s.op)):s.op.a-s.op.b)&&(isAddition(s.op.mode)||(s.removed===s.op.b&&s.answer===s.op.a-s.op.b))}
 export function finishTree(state,answer){let s=copy(state);if(s.op.mode!=='subtract'||s.removed!==s.op.b)throw Error('Tacha primero las partes del sustraendo.');if(!integer(answer)||answer!==s.op.a-s.op.b)throw Error('Revisa las partes que quedan sin tachar.');const ns=activeNodes(s);if(ns.length>1)s=mergeNodes(s,ns.map(n=>n.id),answer);s.answer=answer;s.actions.push({type:'finishTree',answer});return s}
 export function createClimb(op,manualStart=false){return {op,needsStart:manualStart,start:manualStart?null:op.b,current:manualStart?null:op.b,jumps:[],log:[],crossedStart:false,branched:false,finished:false,actions:[]}}
 export function setClimbStart(state,answer){const s=copy(state);if(!s.needsStart)throw Error('El punto de partida ya está escrito.');if(!Number.isInteger(answer)||answer!==s.op.b)throw Error('Revisa el número desde el que empieza tu camino.');s.start=answer;s.current=answer;s.needsStart=false;s.actions.push({type:'startClimb',answer});s.log.push(`Punto de partida: ${answer}`);return s}
@@ -73,10 +82,12 @@ export function branchClimb(state){const s=copy(state);if(!s.crossedStart)throw 
 export function finishClimb(state,answer){const s=copy(state);if(!s.crossedStart||!s.branched)throw Error('Tacha el sustraendo y ramifica los saltos antes de reunirlos.');if(s.current!==s.op.a)throw Error(`Sigue subiendo hasta ${s.op.a}.`);if(!integer(answer)||answer!==sum(s.jumps.map(j=>j.amount)))throw Error('Reúne los saltos que has dado. La distancia total es el resultado de la resta.');s.finished=true;s.log.push(`${s.op.b} + ${answer} = ${s.op.a}`);s.actions.push({type:'finishClimb',answer});return s}
 
 // Los vestidos: aligned vertical place-value totals, followed by the final sum.
-export function createDresses(op){return {op,rows:[null,null],totals:null,answer:null,actions:[],log:[]}}
-export function dressRow(state,row,values){const s=copy(state);if(![0,1].includes(row)||s.rows[row])throw Error('Elige una fila sin completar.');const value=row===0?s.op.a:s.op.b;const expected=[Math.floor(value/100)*100,Math.floor(value/10)%10*10,value%10];if(!Array.isArray(values)||values.length!==3||values.some((v,i)=>!integer(v)||v!==expected[i]))throw Error('Comprueba las centenas, decenas y unidades. Escribe su valor: por ejemplo, 30 para tres decenas.');s.rows[row]=values;s.actions.push({type:'dressRow',row,values});s.log.push(`${value} = ${values.join(' + ')}`);return s}
-export function finishDresses(state,totals,answer){const s=copy(state);if(!s.rows.every(Boolean))throw Error('Descompón primero los dos sumandos.');if(!Array.isArray(totals)||totals.length!==3||totals.some((n,i)=>!integer(n)||n!==s.rows[0][i]+s.rows[1][i]))throw Error('Suma cada vestido y escribe el resultado justo debajo.');if(!integer(answer)||answer!==sum(totals))throw Error('Reúne los tres resultados para hallar la suma final.');s.totals=totals;s.answer=answer;s.actions.push({type:'finishDresses',totals,answer});s.log.push(`${totals.join(' + ')} = ${answer}`);return s}
-export function dressComplete(s){return s.rows.every(Boolean)&&s.answer===s.op.a+s.op.b}
+// Two or three addends: op.c is present only in the three-addend version.
+export function dressAddends(op){return addends(op)}
+export function createDresses(op){return {op,rows:dressAddends(op).map(()=>null),totals:null,answer:null,actions:[],log:[]}}
+export function dressRow(state,row,values){const s=copy(state);const list=dressAddends(s.op);if(!Number.isInteger(row)||row<0||row>=list.length||s.rows[row])throw Error('Elige una fila sin completar.');const value=list[row];const expected=[Math.floor(value/100)*100,Math.floor(value/10)%10*10,value%10];if(!Array.isArray(values)||values.length!==3||values.some((v,i)=>!integer(v)||v!==expected[i]))throw Error('Comprueba las centenas, decenas y unidades. Escribe su valor: por ejemplo, 30 para tres decenas.');s.rows[row]=values;s.actions.push({type:'dressRow',row,values});s.log.push(`${value} = ${values.join(' + ')}`);return s}
+export function finishDresses(state,totals,answer){const s=copy(state);if(!s.rows.every(Boolean))throw Error('Descompón primero todos los sumandos.');if(!Array.isArray(totals)||totals.length!==3||totals.some((n,i)=>!integer(n)||n!==s.rows.reduce((t,r)=>t+r[i],0)))throw Error('Suma cada columna y escribe el resultado justo debajo.');if(!integer(answer)||answer!==sum(totals))throw Error('Reúne los tres resultados para hallar la suma final.');s.totals=totals;s.answer=answer;s.actions.push({type:'finishDresses',totals,answer});s.log.push(`${totals.join(' + ')} = ${answer}`);return s}
+export function dressComplete(s){return s.rows.every(Boolean)&&s.answer===sum(dressAddends(s.op))}
 // Stable three-quantity bags from the operation seed. Levels 3–4 also estimate.
 export function sackAmounts(op){if((op.level|| (op.digits===3?3:1))<=2){const total=op.a+op.b;const hundreds=Math.floor(total/100)*100,tens=Math.floor(total/10)%10*10,units=total%10;const parts=[hundreds,tens,units].filter(v=>v>0);if(parts.length<3){const i=parts.findIndex(v=>v>=20);if(i>=0){const value=parts.splice(i,1)[0];parts.push(10,value-10)}}return parts}const half=Math.floor(op.b/2);return [op.a,half,op.b-half]}
 export function createSacks(op){const amounts=sackAmounts(op);return {op,amounts,pieces:amounts.map((value,id)=>({id,value})),serial:amounts.length,rounds:null,estimate:null,exact:null,difference:null,finished:false,actions:[],log:[]}}

@@ -1,4 +1,4 @@
-import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261116-geoboard-v12';
+import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261119-sumas3-v1';
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 const colors=['#d04b36','#2678ab','#4e8d52','#914ba5'];
@@ -41,7 +41,7 @@ export function openGeoboard({host,course=1,level=1,player,api,home,onPoints,fre
   $('#geo-course').onchange=e=>{currentCourse=Number(e.target.value);index=0;choose();render()};
   $('#geo-level').onchange=e=>{difficulty=Number(e.target.value);index=0;choose();render()};
   $('#geo-free').onclick=()=>{if(free&&(!player.name||player.name.trim().length<2)){message('Vuelve a las misiones y escribe tu nombre para guardar retos. Puedes seguir explorando libremente.');return}free=!free;choose();render()};
-  $('#geo-next').onclick=()=>{index=(index+1)%32;choose();render()};
+  $('#geo-next').onclick=()=>{let next;do{next=Math.floor(Math.random()*10000)}while(next===index);index=next;choose();render()};
   $('#geo-close').onclick=close;
   $('#geo-undo').onclick=()=>{if(closed)closed=false;else if(points.length)points.pop();else if(bands.length){points=bands.pop();closed=true}message('');board()};
   $('#geo-clear').onclick=()=>{points=[];closed=false;bands=[];message('');board()};

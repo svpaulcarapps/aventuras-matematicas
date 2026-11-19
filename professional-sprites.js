@@ -1,4 +1,4 @@
-import {costumeById} from './costumes.js?v=20261115-classroom-v10';
+import {costumeById} from './costumes.js?v=20261119-sumas3-v1';
 const BARE_SPRITES={summer:'assets/art/feet-summer-v5.webp',formal:'assets/art/feet-formal-v5.webp',summer2:'assets/art/feet-summer2-v5.webp',formal2:'assets/art/feet-formal2-v5.webp'};
 const SPRITES={summer:'assets/pixel/avatars-summer-v4.webp',formal:'assets/pixel/avatars-formal-v3.webp',summer2:'assets/art/avatars-summer-v5.webp',formal2:'assets/art/avatars-formal-v5.webp'};
 // Attachment landmarks are in the same 48 × 72 coordinate system as the avatar.
