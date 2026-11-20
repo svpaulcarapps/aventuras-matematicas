@@ -1,4 +1,4 @@
-import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261120-cursos-v1';
+import {polygon,pathMetrics,geoboardChallenge,checkGeoboard,GEO_COURSES,geoboardEvidence} from './geoboard.js?v=20261120-guia-v1';
 const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const number=n=>Number.isInteger(n)?String(n):String(Math.round(n*100)/100).replace('.',',');
 const colors=['#d04b36','#2678ab','#4e8d52','#914ba5'];
