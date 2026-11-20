@@ -1,7 +1,7 @@
-import {wordProblem} from './word-problems.js?v=20261120-guia-v1';
-export {validateMultiplication} from './multiplication.js?v=20261120-guia-v1';
-import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261120-guia-v1';
-import {PRODUCT_MODES,nextProduct,fitsProduct} from './products.js?v=20261120-guia-v1';
+import {wordProblem} from './word-problems.js?v=20261120-guia-v2';
+export {validateMultiplication} from './multiplication.js?v=20261120-guia-v2';
+import {nextMultiplication,validMultiplicationSeed} from './multiplication.js?v=20261120-guia-v2';
+import {PRODUCT_MODES,nextProduct,fitsProduct} from './products.js?v=20261120-guia-v2';
 export const LABELS={problems:'Problemas de suma y resta',add:'Suma en árbol',subtract:'Resta en árbol',climb:'Rocódromo',dresses:'Suma en vestidos',sacks:'Sacos de Paco',sackhunt:'Reto de Paco',multiply:'Problemas de multiplicación',geoboard:'El geoplano',tangram:'El tangram',shark:'Multiplicación del tiburón',italian:'Técnica italiana'};
 export const sum=ns=>ns.reduce((a,b)=>a+b,0);
 export const isAddition=mode=>['add','dresses','sacks','sackhunt'].includes(mode);
