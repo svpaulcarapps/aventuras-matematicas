@@ -1,4 +1,4 @@
-import {rodSize,rodPositionFree,findRodPosition,packRods} from './rod-layout.js?v=20261119-mult-v1';
+import {rodSize,rodPositionFree,findRodPosition,packRods} from './rod-layout.js?v=20261120-cursos-v1';
 const colours=['#fffdf3','#df3938','#9acd50','#d476ae','#f8db38','#287948','#222222','#8e5839','#2379bf','#ef8b2c'];
 let items=[],serial=0,marks=true,open=false,drag=null,expanded=false;
 const $=s=>document.querySelector(s);
