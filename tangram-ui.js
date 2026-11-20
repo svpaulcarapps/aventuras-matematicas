@@ -21,16 +21,18 @@ export function openTangram({host,level=1,player,api,home,onPoints}){
   $('#tg-check').disabled=solved;
   $('#tg-board').querySelectorAll('[data-piece]').forEach(el=>{
    el.onpointerdown=e=>{if(solved)return;e.preventDefault();const i=Number(el.dataset.piece),pt=svgPoint(e);selected=i;drag={i,dx:pieces[i].x-pt.x,dy:pieces[i].y-pt.y,moved:false};el.setPointerCapture?.(e.pointerId);board()};
-   el.onkeydown=e=>{const i=Number(el.dataset.piece),p=pieces[i];selected=i;const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(moves[e.key]){e.preventDefault();p.x+=moves[e.key][0];p.y+=moves[e.key][1]}else if(e.key==='r'||e.key==='R'){turn(p,q=>q.r=(q.r+1)%8)}else if(e.key==='f'||e.key==='F'){turn(p,q=>q.f=!q.f)}else return;board();$(`[data-piece="${i}"]`)?.focus()};
+   el.onkeydown=e=>{const i=Number(el.dataset.piece),p=pieces[i];selected=i;const moves={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};if(moves[e.key]){e.preventDefault();p.x+=moves[e.key][0];p.y+=moves[e.key][1]}else if(e.key==='r'||e.key==='R'){turn(p,q=>q.r=(q.r+1)%8)}else if(e.key==='f'||e.key==='F'){turn(p,q=>q.f=!q.f)}else return;board();$(`[data-piece="${i}"]`)?.focus();auto()};
   });
  };
+ // Comprueba solo, sin contar fallo, cuando la figura queda completa.
+ const auto=()=>{if(solved||busy||!run)return;try{checkTangram(task,pieces)}catch{return}void check()};
  const onMove=e=>{if(!drag)return;const pt=svgPoint(e),p=pieces[drag.i];p.x=pt.x+drag.dx;p.y=pt.y+drag.dy;drag.moved=true;const el=$(`[data-piece="${drag.i}"]`);if(el)el.setAttribute('points',poly(p).map(v=>v.join(',')).join(' '))};
- const onUp=()=>{if(!drag)return;const p=pieces[drag.i];if(drag.moved)snap(p);else turn(p,q=>q.r=(q.r+1)%8);drag=null;board()};
+ const onUp=()=>{if(!drag)return;const p=pieces[drag.i];if(drag.moved)snap(p);else turn(p,q=>q.r=(q.r+1)%8);drag=null;board();auto()};
  const render=()=>{
   root.innerHTML=`${STYLE}<div class="tg-head"><div><span class="eyebrow">MODELO OCULTO · OAOA</span><h1>El tangram</h1></div><button id="tg-home" class="secondary">Volver a las misiones</button></div><div class="tg-levels" role="group" aria-label="Nivel">${LEVELS.map((l,i)=>`<button class="secondary" data-level="${i+1}" aria-pressed="${difficulty===i+1}">${i+1} · ${l}</button>`).join('')}</div><p><b>${esc(task.name)}.</b> ${esc(task.prompt)}</p>${task.level<=3?`<p class="tg-pista"><b>Pista:</b> ${esc(task.hint)}</p>`:''}<svg id="tg-board" class="tg-board" viewBox="0 0 20 11" role="group" aria-label="Tablero del tangram"></svg><div class="tg-tools"><button id="tg-left" class="secondary">⟲ Girar</button><button id="tg-right" class="secondary">⟳ Girar</button><button id="tg-flip" class="secondary">⇋ Dar la vuelta</button><button id="tg-check" class="primary">Comprobar mi tangram</button>${task.lines?`<button id="tg-lines" class="secondary">${(showLines??task.lines)?'🙈 Ocultar piezas':'👁 Ver piezas'}</button>`:''}<button id="tg-next" class="secondary">Otro reto</button></div><p class="tg-hint">Arrastra las piezas a la silueta. Toca una pieza sin moverla para girarla. Con el teclado: flechas para mover, R para girar y F para dar la vuelta.</p><p id="tg-msg" class="tg-msg" role="status" aria-live="polite"></p><div id="tg-result"></div>`;
   $('#tg-home').onclick=()=>{cleanup();home()};
   root.querySelectorAll('[data-level]').forEach(b=>b.onclick=()=>{difficulty=Number(b.dataset.level);seed=Math.floor(Math.random()*10000);choose();render()});
-  const act=fn=>()=>{if(selected===null||solved){message('Primero toca una pieza.');return}turn(pieces[selected],fn);board()};
+  const act=fn=>()=>{if(selected===null||solved){message('Primero toca una pieza.');return}turn(pieces[selected],fn);board();auto()};
   $('#tg-left').onclick=act(p=>p.r=(p.r+7)%8);$('#tg-right').onclick=act(p=>p.r=(p.r+1)%8);$('#tg-flip').onclick=act(p=>p.f=!p.f);
   $('#tg-next').onclick=()=>{let next;do{next=Math.floor(Math.random()*10000)}while(next===seed);seed=next;choose();render()};
   $('#tg-check').onclick=check;if($('#tg-lines'))$('#tg-lines').onclick=()=>{showLines=!(showLines??task.lines);$('#tg-lines').textContent=showLines?'🙈 Ocultar piezas':'👁 Ver piezas';board()};
