@@ -8,7 +8,13 @@ export function openTangram({host,level=1,player,api,home,onPoints}){
  const $=s=>root.querySelector(s),active=()=>host.contains(root),message=t=>{const m=$('#tg-msg');if(m)m.textContent=t};
  const poly=p=>placePiece(p.type,p),centre=pts=>[pts.reduce((s,p)=>s+p[0],0)/pts.length,pts.reduce((s,p)=>s+p[1],0)/pts.length];
  // Pull a piece onto whole-number points when one of its corners is close to one.
- const snap=p=>{let best=null;for(const v of poly(p)){const t=[Math.round(v[0]),Math.round(v[1])],d=Math.hypot(t[0]-v[0],t[1]-v[1]);if(!best||d<best.d)best={d,dx:t[0]-v[0],dy:t[1]-v[1]}}if(best&&best.d<.6){p.x=Math.round((p.x+best.dx)*1e6)/1e6;p.y=Math.round((p.y+best.dy)*1e6)/1e6}};
+ // Imán: si la pieza está cerca de su sitio en la figura y con la misma forma girada, encaja exacta.
+ const key=pts=>pts.map(v=>v.map(n=>Math.round(n*1000)/1000).join(',')).sort().join('|');
+ const magnet=p=>{const mine=poly(p),c=centre(mine);let best=null;
+  task.solution.forEach((slot,k)=>{if(slot.type!==p.type)return;if(pieces.some(q=>q!==p&&key(poly(q))===key(slot.pts)))return;const sc=centre(slot.pts),dx=sc[0]-c[0],dy=sc[1]-c[1],d=Math.hypot(dx,dy);if(d>1.3)return;
+   const moved=mine.map(v=>[v[0]+dx,v[1]+dy]);if(key(moved)!==key(slot.pts))return;if(!best||d<best.d)best={d,dx,dy}});
+  if(best){p.x=Math.round((p.x+best.dx)*1e6)/1e6;p.y=Math.round((p.y+best.dy)*1e6)/1e6;return true}return false};
+ const snap=p=>{if(magnet(p))return;let best=null;for(const v of poly(p)){const t=[Math.round(v[0]),Math.round(v[1])],d=Math.hypot(t[0]-v[0],t[1]-v[1]);if(!best||d<best.d)best={d,dx:t[0]-v[0],dy:t[1]-v[1]}}if(best&&best.d<.6){p.x=Math.round((p.x+best.dx)*1e6)/1e6;p.y=Math.round((p.y+best.dy)*1e6)/1e6}};
  const turn=(p,change)=>{const before=centre(poly(p));change(p);const after=centre(poly(p));p.x+=before[0]-after[0];p.y+=before[1]-after[1];snap(p)};
  const choose=()=>{revision++;showLines=null;task=tangramChallenge({a:seed,level:difficulty});pieces=task.pieces.map(p=>({...p}));selected=null;run=null;solved=false;mistakes=0};
  const svgPoint=e=>{const svg=$('#tg-board'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse())};
