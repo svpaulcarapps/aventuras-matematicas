@@ -10,6 +10,7 @@ const languageAccount='https://svpaulcarapps.github.io/el-secreto-de-las-palabra
 function useLanguageHeader(){
  if(!profileFromLanguage)return;
  document.title='Mi cuenta · El secreto de las palabras';
+ document.documentElement.classList.add('language-account');
  const header=$('header'),brand=$('#home-link'),logo=brand.querySelector('img'),title=brand.lastElementChild;
  brand.href=languageAccount;
  logo.src=languageAccount+'logo-lengua.png';
@@ -17,6 +18,14 @@ function useLanguageHeader(){
  title.replaceChildren(document.createTextNode('Aventuras de Lengua'),document.createElement('br'));
  const name=document.createElement('b');name.textContent='El secreto de las palabras';title.append(name);
  const tag=header.querySelector('.level-tag');if(tag)tag.textContent='LENGUA · PRIMARIA';
+ const footer=$('footer'), label=document.createElement('strong'), motto=document.createElement('span'), credit=document.createElement('span'), link=document.createElement('a'), badge=document.createElement('img');
+ label.textContent='★ El secreto de las palabras';
+ motto.textContent='Lee. Escucha. Descubre.';
+ credit.textContent='Creador: Carlos Mercader Conesa';
+ link.href='https://svpaulcarapps.github.io/aventuras-matematicas/';
+ badge.src='assets/art/oaoa-logo-v5.webp';badge.alt='';badge.width=28;badge.height=28;
+ link.append(badge,document.createTextNode(' Aventuras Matemáticas ↗'));
+ footer.replaceChildren(label,motto,credit,link);
  header.addEventListener('click',event=>{
   const target=event.target.closest('#home-link,#ranking-link,#teacher-link,#learn-link');
   if(!target)return;
