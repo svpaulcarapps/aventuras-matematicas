@@ -1,5 +1,5 @@
-import {costumeById} from './costumes.js?v=20261121-capas-rojas';
-import {spriteFrames} from './professional-sprites.js?v=20261121-capas-rojas';
+import {costumeById} from './costumes.js?v=20261121-capirote';
+import {spriteFrames} from './professional-sprites.js?v=20261121-capirote';
 import {validEquipment} from './rewards.js?v=20261120-guia-v2';
 export const SKINS=['#f8d5ae','#eeb789','#d89765','#ba7952','#8c513a','#60382d'];
 export const HAIRS=['#342c32','#684331','#a75d2e','#eac35b','#b72f4f','#4165a0','#eeedf5','#293c6b'];
