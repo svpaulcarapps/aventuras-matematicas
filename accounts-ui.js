@@ -1,4 +1,4 @@
-import {COSTUMES} from './costumes.js?v=20261120-guia-v2';
+import {COSTUMES} from './costumes.js?v=20261121-atuendos';
 import {DEFAULT_SCHOOL,schoolName,schoolOptions} from './schools.js?v=20261120-guia-v2';
 import {avatarSvg,DEFAULT_AVATAR} from './avatar.js?v=20261120-guia-v2';
 const $=s=>document.querySelector(s),esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
